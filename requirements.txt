@@ -1,1 +1,9 @@
-
+ultralytics
+roboflow==1.*
+opencv-python-headless  
+matplotlib
+scikit-learn
+PyYAML
+rich
+numpy
+pandas
