@@ -1,1 +1,8 @@
-
+# Ignore heavy files and system junk
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints
+*.mp4
+*.avi
+*.h5
+*.pt
