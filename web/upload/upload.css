@@ -1,0 +1,88 @@
+body {
+  background: linear-gradient(145deg, #111827, #1e293b);
+  color: white;
+}
+.hero {
+  background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+  padding: 18px;
+  border-radius: 16px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.hero h1 {
+  margin: 0;
+  font-size: 28px;
+  font-family: "Dancing Script", cursive;
+}
+.hero p {
+  opacity: 0.9;
+  margin-top: 5px;
+}
+
+
+
+
+.nav {
+    background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+}
+
+
+@keyframes myAnimation {
+    0% {color: #ffffff;}
+    10%  {color: #5cd2f6;}
+    25%  {color: rgb(123, 242, 123);}
+    50% {color: rgb(255, 251, 149);}
+    75% {color: rgb(233, 110, 163);}
+    90%   {color: #ac88ff ;}
+}
+
+.list {
+    list-style: none;
+    display: flex;
+    gap: 50px;
+    margin: 0;
+    padding: 0;
+}
+
+.logo img {
+    width: 125px;      
+    height: 125px;     
+    object-fit: cover; 
+    border-radius: 50%; 
+    margin-left: 20px;
+
+}
+
+
+.page {
+    font-size:xx-large;
+    font-weight: 0.5;
+    font: bold; 
+    text-decoration: none;
+    color: white;
+    font-family: "Dancing Script", cursive;
+    transition: all 0.4s ease;
+    
+}
+
+.page:hover{
+    font-size:40px;
+    animation-duration: 16s;
+    animation-name: myAnimation;
+    animation-iteration-count: infinite;
+}
+
+
+.title {
+    display: flex;
+    justify-content: center;
+    font-size: 30px;
+    font-family: "Dancing Script", cursive;
+
+}
+
