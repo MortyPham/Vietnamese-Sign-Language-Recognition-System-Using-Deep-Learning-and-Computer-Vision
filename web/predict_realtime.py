@@ -1,5 +1,6 @@
 # ------------ CONFIG (edit these if your checkpoint doesn't include them) ------------
-CHECKPOINT_PATH = "tinyresnet1d.pt"      # <-- your trained model file
+CHECKPOINT_PATH_SENTENCE = "sentence_resnet_model.pt"
+CHECKPOINT_PATH_ALPHABET = "alphabet_model.pt"
 # If your checkpoint doesn't store class names, list them here in the correct order:
 CLASS_NAMES_FALLBACK = [
   "ban dang lam gi",
@@ -66,6 +67,7 @@ CLASS_NAMES_FALLBACK = [
 ]   # ====================== CONFIG ======================
 
 import cv2, mediapipe as mp, numpy as np, collections, torch, torch.nn as nn
+from ultralytics import YOLO
 
 # ---------- MediaPipe: frame -> 126 ----------
 mp_hands = mp.solutions.hands
@@ -133,7 +135,7 @@ class ResNet1D(nn.Module):
 
 
 # ---------- Checkpoint loading ----------
-def load_any_checkpoint(path):
+  def load_any_checkpoint(path):
     obj = torch.load(path, map_location="cpu")
     # module -> use state_dict
     if isinstance(obj, nn.Module):
@@ -154,7 +156,7 @@ class Smooth:
 # ---------- Main demo ----------
 def main():
     print("Starting real-time prediction...")
-    ckpt = load_any_checkpoint(CHECKPOINT_PATH)
+    ckpt = load_any_checkpoint(CHECKPOINT_PATH_SENTENCE)
     state = ckpt.get("state_dict", ckpt)
     class_names = ckpt.get("class_names", None) or CLASS_NAMES_FALLBACK
     if not class_names or len(class_names) < 2:
@@ -179,6 +181,10 @@ def main():
     softmax = nn.Softmax(dim=-1)
     smooth  = Smooth(n_classes, alpha=0.6)
 
+    print("Loading YOLOv8 Alphabet Model...")
+    model_yolo = YOLO(CHECKPOINT_PATH_ALPHABET)
+    current_mode = "PHRASE"
+
     # camera
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # on some PCs CAP_MSMF works better
     if not cap.isOpened():
@@ -191,30 +197,44 @@ def main():
         while True:
             ok, frame = cap.read()
             if not ok: break
-            rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            results = hands.process(rgb)
+            frame = cv2.flip(frame, 1)
+            if current_mode == "PHRASE":
+                rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                results = hands.process(rgb)
 
-            v = mp_frame_to_126(results)            # (126,)
-            v = (v - mu) / sd
-            x = torch.from_numpy(v).view(1, 1, 126).float()
+                v = mp_frame_to_126(results)            # (126,)
+                v = (v - mu) / sd
+                x = torch.from_numpy(v).view(1, 1, 126).float()
 
-            with torch.no_grad():
-                logits = model(x).squeeze(0)        # (C,)
-                probs  = softmax(logits).cpu().numpy()
-                probs  = smooth(probs)
-                top    = int(probs.argmax())
-                conf   = float(probs[top])
+                with torch.no_grad():
+                    logits = model(x).squeeze(0)        # (C,)
+                    probs  = softmax(logits).cpu().numpy()
+                    probs  = smooth(probs)
+                    top    = int(probs.argmax())
+                    conf   = float(probs[top])
 
-            # draw landmarks
-            if results.multi_hand_landmarks:
-                for lm in results.multi_hand_landmarks:
-                    mp_draw.draw_landmarks(frame, lm, mp_hands.HAND_CONNECTIONS)
+                # draw landmarks
+                if results.multi_hand_landmarks:
+                    for lm in results.multi_hand_landmarks:
+                        mp_draw.draw_landmarks(frame, lm, mp_hands.HAND_CONNECTIONS)
 
-            cv2.putText(frame, f"{class_names[top]}  {conf*100:.1f}%",
-                        (10,30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,255,255), 2)
+                cv2.putText(frame, f"{class_names[top]}  {conf*100:.1f}%",
+                            (10,30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,255,255), 2)
+            else:
+                yolo_results = model_yolo(frame, stream=False, verbose=False)
+                frame = yolo_results[0].plot()
+            
+            cv2.putText(frame, f"Mode: {current_mode} (Press 'M' to switch)", 
+                        (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
+
             cv2.imshow("ResNet1D – Sign prediction (ESC to quit)", frame)
-            if cv2.waitKey(1) & 0xFF == 27:
+
+            key = cv2.waitKey(1) & 0xFF
+            if key == 27:
                 break
+            elif key == ord('m') or key == ord('M'):
+                current_mode = "ALPHABET" if current_mode == "PHRASE" else "PHRASE"
+
 
     cap.release()
     cv2.destroyAllWindows()
