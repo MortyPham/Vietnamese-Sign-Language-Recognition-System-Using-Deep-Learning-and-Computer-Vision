@@ -1,32 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/upload_assets/upload.css">
-    <title>Vietnamese Sign Language Detection</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="A workspace for recognizing Vietnamese Sign Language letters and supported phrases. Upload a sign or use your camera.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/assets/studio.css">
+  <script src="/assets/studio.js" defer></script>
+  <title>Upload — VSL Studio</title>
 </head>
-<body>
-    <div class="hero">
-      <h1>🖐️ Welcome to our web application</h1>
+<body data-page="upload">
+<svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m-5 5 5-5 5 5M4 16v4h16v-4"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 10 5-3v10l-5-3"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V3H3v13h5"/></symbol>
+  <symbol id="i-sound" viewBox="0 0 24 24"><path d="m11 4-6 5H2v6h3l6 5zm4 4a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7L10 14m0-10H3v17h17v-7"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V5a1.5 1.5 0 0 1 3 0v6-8a1.5 1.5 0 0 1 3 0v8-6a1.5 1.5 0 0 1 3 0v8-4a1.5 1.5 0 0 1 3 0v7c0 4-3 6-7 6-3 0-5-2-7-5l-3-4a1.5 1.5 0 0 1 2-2l3 2"/></symbol>
+</svg>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/" aria-label="VSL Studio home">
+      <span class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 9v7a9 9 0 0 0 18 0V9M12 7v9a4 4 0 0 0 8 0V7"/></svg></span>
+      <span>vsl<span class="brand-light">studio</span><span class="brand-dot">.</span></span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="/home.html">Home</a>
+      <a href="/upload.html" class="nav-active" aria-current="page">Upload</a>
+      <a href="/webcam.html">Live webcam</a>
+    </nav>
+    <a class="repository-link" href="https://github.com/MortyPham/Vietnamese-Sign-Language-Recognition-System-Using-Deep-Learning-and-Computer-Vision" target="_blank" rel="noopener noreferrer">View on GitHub <svg class="icon"><use href="#i-external"/></svg></a>
+  </div>
+</header>
+<main id="main-content" class="page-shell recognition-page">
+  <section id="workspace" class="workspace" aria-labelledby="workspace-title">
+    <div class="workspace-heading">
+      <div><span class="section-kicker">FILE RECOGNITION</span>
+        <h1 id="workspace-title">Upload a sign.</h1>
+        <p class="page-description">Choose a file, check the preview, and confirm to see the words.</p>
+      </div>
+      <span id="service-status" class="service-status"><span class="status-dot"></span> Connecting to models</span>
     </div>
-    <div class = "nav">
-        <a href="" class = "logo">
-            <img src="/home_assets/image-removebg-preview.png" alt="Logo" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/25/25231.png';">
-        </a>
-        <ul class = "list">
-            <li><a class="page" href = "/home.html">Home</a></li>
-            <li><a class="page" href = "#">Upload manual</a></li>
-            <li><a class="page" href = "/webcam.html">Live webcam</a></li>
-        </ul>
+    <div class="workspace-toolbar">
+      <div class="mode-control"><span class="mode-label" id="mode-label">Recognition level</span><div class="mode-buttons" role="group" aria-labelledby="mode-label">
+        <button class="mode-button active" data-mode="letters" aria-pressed="true" type="button">Letters</button>
+        <button class="mode-button" data-mode="words" aria-pressed="false" type="button">Single words <span class="mode-soon" id="words-badge">—</span></button>
+        <button class="mode-button" data-mode="sentences" aria-pressed="false" type="button">Sentences</button>
+      </div></div>
     </div>
-
-    <div class = "title">
-        <h2>Upload Manual</h2>
+    <div class="workspace-grid">
+      <article class="input-card">
+        <div class="card-heading"><div><span class="card-step">01 / INPUT</span><h2 id="input-title">Upload a photo</h2></div><span id="input-format" class="quiet-badge">PHOTO</span></div>
+        <div id="upload-panel" aria-labelledby="input-title">
+          <p id="input-description" class="card-description">Upload a clear photo with your whole hand in view.</p>
+          <input id="file-input" type="file" accept=".jpg,.jpeg,.png,.webp" hidden>
+          <button id="dropzone" class="dropzone" type="button">
+            <span class="upload-glyph"><svg><use href="#i-upload"/></svg></span>
+            <strong>Drop your sign here</strong>
+            <span>or <span class="browse-text">browse files</span> from your device</span>
+            <small id="format-hint">JPG, PNG or WebP · up to 30 MB</small>
+          </button>
+          <div id="file-preview" class="file-preview" hidden>
+            <div class="preview-stage"><img id="preview-image" alt="Selected sign preview" hidden><video id="preview-video" controls playsinline hidden></video><canvas id="detection-overlay" aria-hidden="true" hidden></canvas></div>
+            <div class="file-bar"><svg class="icon"><use href="#i-image"/></svg><div><strong id="file-name"></strong><small id="file-size"></small></div><button id="remove-file" class="icon-button" type="button" aria-label="Remove selected file"><svg class="icon"><use href="#i-close"/></svg></button></div>
+          </div>
+          <div class="input-actions"><span id="upload-ready" class="ready-note"><span class="tiny-dot"></span> Your preview appears before translation</span><button id="translate-button" class="primary-button" type="button" disabled><span>Translate sign</span><svg class="icon"><use href="#i-arrow"/></svg></button></div>
+          <div class="samples-section" id="samples-section"><div class="samples-heading"><span>No photo handy? Try a sample.</span><span class="mini-tag">VSL DATASET</span></div><div id="sample-list" class="sample-list"></div><p class="sample-credit">From <a href="https://universe.roboflow.com/ho-chi-minh-university-of-technology-clmwp/vietnam-sign-language" target="_blank" rel="noopener noreferrer">Ho Chi Minh University of Technology</a> · CC BY 4.0</p></div>
+        </div>
+        <div id="webcam-panel" aria-labelledby="input-title" hidden>
+          <p class="card-description" id="webcam-description">Make a sign, then keep your hands still for six seconds.</p>
+          <div class="camera-stage">
+            <video id="camera-video" autoplay muted playsinline hidden></video>
+            <div id="camera-placeholder" class="camera-placeholder"><span class="upload-glyph"><svg><use href="#i-camera"/></svg></span><strong>A little space to express yourself</strong><span>Good lighting. Hands in view. Your own pace.</span></div>
+            <div id="camera-indicator" class="camera-indicator" hidden><span class="status-dot"></span><span id="camera-state">Camera ready</span></div>
+            <div class="camera-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div id="capture-progress" class="capture-progress" hidden><div><span id="capture-message">Bring your hands into view</span><strong id="capture-countdown"></strong></div><div class="progress-track"><span id="pause-progress"></span></div></div>
+          <div class="camera-actions"><button id="stop-camera" class="secondary-button" type="button" hidden>Turn off camera</button><button id="camera-button" class="primary-button" type="button"><svg class="icon"><use href="#i-camera"/></svg><span>Enable camera</span></button></div>
+          <div class="camera-tip"><svg class="icon"><use href="#i-info"/></svg><p>Sign naturally, then hold still with your hands visible. A six-second pause finishes your sign. Each new sign starts when you’re ready.</p></div>
+        </div>
+        <div id="model-unavailable" class="unavailable-panel" hidden><svg><use href="#i-info"/></svg><h3>This model isn’t connected yet.</h3><p id="unavailable-description"></p><span>Try Letters or Sentences to get started.</span></div>
+        <p id="input-error" class="input-error" role="alert" hidden></p>
+      </article>
+      <aside class="result-card" aria-labelledby="result-heading">
+        <div class="card-heading"><div><span class="card-step">02 / TRANSLATION</span><h2 id="result-heading">Your translation</h2></div><span class="language-badge">VI</span></div>
+        <div class="result-body" aria-live="polite" aria-atomic="true">
+          <span id="result-status" class="result-status">READY WHEN YOU ARE</span>
+          <div id="result-empty" class="result-empty"><span class="quote-mark">“</span><h3>Your words, here.</h3><p id="empty-description">Choose a photo and select<br>Translate sign to begin.</p></div>
+          <div id="result-content" hidden><p id="result-label" lang="vi"></p><p id="result-message"></p></div>
+          <div id="result-loading" class="result-loading" hidden><span class="loading-orbit"></span><h3>Finding the words…</h3><p>Giving your sign a moment of attention.</p></div>
+        </div>
+        <div class="result-actions"><button id="copy-result" class="text-button" type="button" disabled><svg class="icon"><use href="#i-copy"/></svg>Copy text</button><button id="speak-result" class="text-button" type="button" disabled><svg class="icon"><use href="#i-sound"/></svg>Listen</button><span id="result-time"></span></div>
+        <details id="model-details" class="model-details" hidden><summary>Recognition details</summary><div id="details-content"></div></details>
+        <div class="result-footnote"><span class="tiny-dot"></span> Vietnamese Sign Language → Vietnamese text</div>
+      </aside>
     </div>
-
-
-    <iframe src="/upload" style="width:100%; height:90vh; border:none;"></iframe>
-
+    <div class="workspace-bottom"><p><svg class="icon"><use href="#i-info"/></svg><span id="mode-note">Recognizes the letters included in the trained model.</span></p><button id="vocabulary-button" class="vocabulary-button" type="button">Explore supported signs <svg class="icon"><use href="#i-arrow"/></svg></button></div>
+  </section>
+  <footer class="site-footer"><span>vslstudio. <span class="footer-divider">/</span> A little closer, with every sign.</span><span>Made for connection.</span></footer>
+</main>
+<dialog id="vocabulary-dialog" aria-labelledby="vocabulary-title">
+  <div class="dialog-heading"><div><span class="section-kicker">THE MODEL’S VOCABULARY</span><h2 id="vocabulary-title">Supported signs</h2></div><button id="close-dialog" class="icon-button" type="button" aria-label="Close supported signs"><svg class="icon"><use href="#i-close"/></svg></button></div>
+  <div id="vocabulary-browser">
+    <p id="vocabulary-note"></p><p id="demo-library-note" class="demo-library-note" hidden></p>
+    <div class="vocabulary-tools"><div class="vocabulary-search-field"><label class="search-label" for="vocabulary-search">Find a sign</label><input id="vocabulary-search" class="vocabulary-search" type="search" placeholder="Search supported signs…"></div><button id="video-filter" class="video-filter" type="button" aria-pressed="false" hidden>With videos</button></div>
+    <div id="vocabulary-list" class="vocabulary-list"></div>
+  </div>
+  <section id="demo-detail" aria-labelledby="demo-title" hidden>
+    <button id="demo-back" class="demo-back" type="button">← All supported phrases</button>
+    <h3 id="demo-title" class="demo-title"></h3>
+    <div id="demo-player" class="demo-player" hidden></div>
+    <div id="demo-unavailable" class="demo-unavailable" hidden><strong>A video for this phrase isn’t available yet.</strong><p>This phrase is supported by the model. We still need a verified recording to demonstrate it.</p><button id="demo-other-signs" class="secondary-button" type="button">Browse phrases with videos</button></div>
+    <p id="demo-credit" class="demo-credit" hidden>Reference: <a id="demo-source" target="_blank" rel="noopener noreferrer"></a><span id="demo-signer"></span></p>
+    <div id="demo-guidance" class="demo-guidance" hidden><p>Press play to watch. Use the player’s controls to replay or slow the demonstration.</p><p id="demo-reference-note"></p></div>
+    <div class="demo-actions"><button id="practice-sign" class="primary-button" type="button" hidden>Try this sign <svg class="icon"><use href="#i-arrow"/></svg></button><a id="demo-open-source" target="_blank" rel="noopener noreferrer" hidden>Open original video <svg class="icon"><use href="#i-external"/></svg></a></div>
+  </section>
+</dialog>
+<div id="toast" class="toast" role="status" hidden></div>
 </body>
 </html>

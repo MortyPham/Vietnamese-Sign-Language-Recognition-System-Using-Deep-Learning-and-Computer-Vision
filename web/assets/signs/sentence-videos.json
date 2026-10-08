@@ -1,0 +1,33 @@
+{
+  "demonstrations": [
+    {
+      "label": "Xin chào.",
+      "provider": "youtube",
+      "video_id": "4avGnxaLmb0",
+      "source_title": "TokyoLife · Sign language lesson 1",
+      "source_url": "https://tokyolife.vn/blog/ngoi-nha-thien-than/cung-hoc-ngon-ngu-ky-hieu-voi-thien-than-tokyolife",
+      "watch_url": "https://www.youtube.com/watch?v=4avGnxaLmb0",
+      "note": "This short lesson demonstrates Xin chào, Cảm ơn and Xin lỗi. Regional signing and the model’s training examples may differ."
+    },
+    {
+      "label": "Cảm ơn.",
+      "provider": "youtube",
+      "video_id": "E5I_GHsdXAY",
+      "source_title": "Hanoi Sign Language Talking Dictionary",
+      "source_url": "https://talkingdictionary.swarthmore.edu/vietnamese_sign/?entry=104",
+      "watch_url": "https://www.youtube.com/watch?v=E5I_GHsdXAY",
+      "signer": "Isaac Trương",
+      "note": "A Hanoi Sign Language demonstration of Cảm ơn. Regional signing and the model’s training examples may differ."
+    },
+    {
+      "label": "Bạn tên là gì?",
+      "provider": "youtube",
+      "video_id": "7kHmw59FUxI",
+      "source_title": "Hanoi Sign Language Talking Dictionary",
+      "source_url": "https://talkingdictionary.swarthmore.edu/vietnamese_sign/?entry=109",
+      "watch_url": "https://www.youtube.com/watch?v=7kHmw59FUxI",
+      "signer": "Isaac Trương",
+      "note": "A Hanoi Sign Language demonstration of Bạn tên là gì? Regional signing and the model’s training examples may differ."
+    }
+  ]
+}

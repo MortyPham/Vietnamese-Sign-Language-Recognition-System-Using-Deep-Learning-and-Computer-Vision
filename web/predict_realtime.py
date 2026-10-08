@@ -1,6 +1,5 @@
 # ------------ CONFIG (edit these if your checkpoint doesn't include them) ------------
-CHECKPOINT_PATH_SENTENCE = "sentence_resnet_model.pt"
-CHECKPOINT_PATH_ALPHABET = "alphabet_model.pt"
+CHECKPOINT_PATH = "tinyresnet1d.pt"      # <-- your trained model file
 # If your checkpoint doesn't store class names, list them here in the correct order:
 CLASS_NAMES_FALLBACK = [
   "ban dang lam gi",
@@ -66,20 +65,23 @@ CLASS_NAMES_FALLBACK = [
   "idle"
 ]   # ====================== CONFIG ======================
 
-import cv2, mediapipe as mp, numpy as np, collections, torch, torch.nn as nn
-from ultralytics import YOLO
+import cv2, mediapipe as mp, numpy as np, torch, torch.nn as nn
 
 # ---------- MediaPipe: frame -> 126 ----------
 mp_hands = mp.solutions.hands
 mp_draw  = mp.solutions.drawing_utils
 
-def mp_frame_to_126(results):
+def mp_frame_to_126(results, *, mirrored=False):
     v = np.zeros(126, dtype=np.float32)
     if not results.multi_hand_landmarks or not results.multi_handedness:
         return v
     hands = {}
     for lm, hd in zip(results.multi_hand_landmarks, results.multi_handedness):
-        label = hd.classification[0].label.upper()  # 'LEFT'/'RIGHT'
+        label = hd.classification[0].label.upper()
+        # Hands assumes mirrored selfie input. Our raw frames are unmirrored;
+        # swap its handedness to match the dataset's anatomical LEFT/RIGHT order.
+        if not mirrored:
+            label = "RIGHT" if label == "LEFT" else "LEFT"
         hands[label] = lm
 
     def fill(dst, hand_lm):
@@ -95,12 +97,6 @@ def mp_frame_to_126(results):
     return v
 
 # ---------- ResNet-1D (for vector length 126) ----------
-
-import torch
-import torch.nn as nn
-
-import torch
-import torch.nn as nn
 
 class ResBlock1D(nn.Module):
     def __init__(self, in_ch, out_ch, k=3, s=1):
@@ -135,8 +131,8 @@ class ResNet1D(nn.Module):
 
 
 # ---------- Checkpoint loading ----------
-  def load_any_checkpoint(path):
-    obj = torch.load(path, map_location="cpu")
+def load_any_checkpoint(path):
+    obj = torch.load(path, map_location="cpu", weights_only=True)
     # module -> use state_dict
     if isinstance(obj, nn.Module):
         return {"state_dict": obj.state_dict()}
@@ -156,7 +152,7 @@ class Smooth:
 # ---------- Main demo ----------
 def main():
     print("Starting real-time prediction...")
-    ckpt = load_any_checkpoint(CHECKPOINT_PATH_SENTENCE)
+    ckpt = load_any_checkpoint(CHECKPOINT_PATH)
     state = ckpt.get("state_dict", ckpt)
     class_names = ckpt.get("class_names", None) or CLASS_NAMES_FALLBACK
     if not class_names or len(class_names) < 2:
@@ -168,7 +164,7 @@ def main():
         num_classes=n_classes,
         in_ch = 1,
     )
-    model.load_state_dict(state, strict=False)
+    model.load_state_dict(state, strict=True)
     model.eval()
 
     # normalization from ckpt if available
@@ -180,10 +176,6 @@ def main():
 
     softmax = nn.Softmax(dim=-1)
     smooth  = Smooth(n_classes, alpha=0.6)
-
-    print("Loading YOLOv8 Alphabet Model...")
-    model_yolo = YOLO(CHECKPOINT_PATH_ALPHABET)
-    current_mode = "PHRASE"
 
     # camera
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # on some PCs CAP_MSMF works better
@@ -197,44 +189,30 @@ def main():
         while True:
             ok, frame = cap.read()
             if not ok: break
-            frame = cv2.flip(frame, 1)
-            if current_mode == "PHRASE":
-                rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                results = hands.process(rgb)
+            rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            results = hands.process(rgb)
 
-                v = mp_frame_to_126(results)            # (126,)
-                v = (v - mu) / sd
-                x = torch.from_numpy(v).view(1, 1, 126).float()
+            v = mp_frame_to_126(results)            # (126,)
+            v = (v - mu) / sd
+            x = torch.from_numpy(v).view(1, 1, 126).float()
 
-                with torch.no_grad():
-                    logits = model(x).squeeze(0)        # (C,)
-                    probs  = softmax(logits).cpu().numpy()
-                    probs  = smooth(probs)
-                    top    = int(probs.argmax())
-                    conf   = float(probs[top])
+            with torch.no_grad():
+                logits = model(x).squeeze(0)        # (C,)
+                probs  = softmax(logits).cpu().numpy()
+                probs  = smooth(probs)
+                top    = int(probs.argmax())
+                conf   = float(probs[top])
 
-                # draw landmarks
-                if results.multi_hand_landmarks:
-                    for lm in results.multi_hand_landmarks:
-                        mp_draw.draw_landmarks(frame, lm, mp_hands.HAND_CONNECTIONS)
+            # draw landmarks
+            if results.multi_hand_landmarks:
+                for lm in results.multi_hand_landmarks:
+                    mp_draw.draw_landmarks(frame, lm, mp_hands.HAND_CONNECTIONS)
 
-                cv2.putText(frame, f"{class_names[top]}  {conf*100:.1f}%",
-                            (10,30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,255,255), 2)
-            else:
-                yolo_results = model_yolo(frame, stream=False, verbose=False)
-                frame = yolo_results[0].plot()
-            
-            cv2.putText(frame, f"Mode: {current_mode} (Press 'M' to switch)", 
-                        (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
-
+            cv2.putText(frame, f"{class_names[top]}  {conf*100:.1f}%",
+                        (10,30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,255,255), 2)
             cv2.imshow("ResNet1D – Sign prediction (ESC to quit)", frame)
-
-            key = cv2.waitKey(1) & 0xFF
-            if key == 27:
+            if cv2.waitKey(1) & 0xFF == 27:
                 break
-            elif key == ord('m') or key == ord('M'):
-                current_mode = "ALPHABET" if current_mode == "PHRASE" else "PHRASE"
-
 
     cap.release()
     cv2.destroyAllWindows()

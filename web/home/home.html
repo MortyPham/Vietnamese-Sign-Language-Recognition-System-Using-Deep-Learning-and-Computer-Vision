@@ -1,26 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/home_assets/home.css">
-    <title>Vietnamese Sign Language Detection</title>
-</head>
-<body>
-    <div class="hero">
-      <h1>🖐️ Welcome to our web application</h1>
-    </div>
-    <div class = "nav">
-        <a href="" class = "logo">
-            <img src="/home_assets/image-removebg-preview.png" alt="Logo" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/25/25231.png';">
-        </a>
-        <ul class = "list">
-            <li><a class="page" href = "#">Home</a></li>
-            <li><a class="page" href = "/upload.html">Upload manual</a></li>`
-            <li><a class="page" href = "/webcam.html">Live webcam</a></li>
-        </ul>
-    </div>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="A workspace for recognizing Vietnamese Sign Language letters and supported phrases. Upload a sign or use your camera.">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/assets/studio.css">
 
-    <div> </div>
+  <title>Home — VSL Studio</title>
+</head>
+<body data-page="home">
+<svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m-5 5 5-5 5 5M4 16v4h16v-4"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 10 5-3v10l-5-3"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V3H3v13h5"/></symbol>
+  <symbol id="i-sound" viewBox="0 0 24 24"><path d="m11 4-6 5H2v6h3l6 5zm4 4a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7L10 14m0-10H3v17h17v-7"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 24 24"><path d="M8 13V5a1.5 1.5 0 0 1 3 0v6-8a1.5 1.5 0 0 1 3 0v8-6a1.5 1.5 0 0 1 3 0v8-4a1.5 1.5 0 0 1 3 0v7c0 4-3 6-7 6-3 0-5-2-7-5l-3-4a1.5 1.5 0 0 1 2-2l3 2"/></symbol>
+</svg>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/" aria-label="VSL Studio home">
+      <span class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 9v7a9 9 0 0 0 18 0V9M12 7v9a4 4 0 0 0 8 0V7"/></svg></span>
+      <span>vsl<span class="brand-light">studio</span><span class="brand-dot">.</span></span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="/home.html" class="nav-active" aria-current="page">Home</a>
+      <a href="/upload.html">Upload</a>
+      <a href="/webcam.html">Live webcam</a>
+    </nav>
+    <a class="repository-link" href="https://github.com/MortyPham/Vietnamese-Sign-Language-Recognition-System-Using-Deep-Learning-and-Computer-Vision" target="_blank" rel="noopener noreferrer">View on GitHub <svg class="icon"><use href="#i-external"/></svg></a>
+  </div>
+</header>
+<main id="main-content" class="page-shell home-page">
+  <section class="intro" aria-labelledby="intro-title">
+    <div>
+      <div class="eyebrow"><span class="tiny-dot"></span> VIETNAMESE SIGN LANGUAGE</div>
+      <h1 id="intro-title">Every sign.<br><span>A connection.</span></h1>
+      <p class="intro-description">Turn a gesture into words. A thoughtful space to<br class="desktop-break"> explore Vietnamese Sign Language, one sign at a time.</p>
+    </div>
+    <div class="intro-aside" aria-hidden="true">
+      <div class="language-orbit"><div class="orbit-ring ring-one"></div><div class="orbit-ring ring-two"></div><div class="orbit-center"><svg><use href="#i-hand"/></svg></div><span class="orbit-label label-sign">A language of movement</span><span class="orbit-label label-text">Xin chào<span class="orbit-cursor"></span></span><span class="orbit-spark spark-one"></span><span class="orbit-spark spark-two"></span></div>
+      <p>Different ways to speak.<br><strong>The same need to connect.</strong></p>
+    </div>
+  </section>
+  <section class="home-entry" aria-labelledby="entry-title">
+    <span class="section-kicker">READY TO BEGIN</span>
+    <h2 id="entry-title">Choose how you want to sign.</h2>
+    <div class="entry-grid">
+      <a class="entry-card" href="/upload.html" aria-label="Open Upload">
+        <span class="entry-icon"><svg><use href="#i-upload"/></svg></span>
+        <h3>Upload a file</h3>
+        <p>Choose a photo for a letter, or a video for a complete sign. Preview it, then translate when you’re ready.</p>
+        <span class="entry-action">Open Upload <svg class="icon"><use href="#i-arrow"/></svg></span>
+      </a>
+      <a class="entry-card" href="/webcam.html" aria-label="Open Live webcam">
+        <span class="entry-icon"><svg><use href="#i-camera"/></svg></span>
+        <h3>Use your webcam</h3>
+        <p>Sign naturally in front of your camera. Hold your hands still for six seconds to finish and see the words.</p>
+        <span class="entry-action">Open Live webcam <svg class="icon"><use href="#i-arrow"/></svg></span>
+      </a>
+    </div>
+  </section>
+  <section id="how-it-works" class="how-section" aria-labelledby="how-title"><div class="section-header"><span class="section-kicker">A SIMPLE CONVERSATION</span><h2 id="how-title">Three steps. A little closer.</h2></div><div class="steps-grid">
+    <article><span class="step-number">01</span><div><h3>Choose your language level</h3><p>A letter for a photo. A supported phrase for a full sign clip.</p></div></article>
+    <article><span class="step-number">02</span><div><h3>Make room for your sign</h3><p>Upload and confirm a file, or sign to your camera and pause.</p></div></article>
+    <article><span class="step-number">03</span><div><h3>Let the words appear</h3><p>Read the result, copy it, or listen with a Vietnamese voice.</p></div></article>
+  </div></section>
+  <section id="about" class="about-section"><div><span class="section-kicker">BUILT WITH PURPOSE</span><h2>Technology, with a human reason.</h2><p>A student research project exploring more accessible communication through Vietnamese Sign Language, deep learning, and computer vision. Recognition is limited to the signs our models have learned.</p></div><a class="paper-link" href="https://docs.google.com/document/d/1FpAOx5w2dIDbhCpRAPXXTfhFj6V8ickP_8FBTIwYfiU/edit" target="_blank" rel="noopener noreferrer"><span>BEHIND THE PROJECT</span><strong>Read the research paper <svg class="icon"><use href="#i-external"/></svg></strong><small>Phạm Ngọc Minh · Phan Nhật Quân · Vũ Anh Thư</small></a></section>
+  <footer class="site-footer"><span>vslstudio. <span class="footer-divider">/</span> A little closer, with every sign.</span><span>Made for connection.</span></footer>
+</main>
 </body>
 </html>
